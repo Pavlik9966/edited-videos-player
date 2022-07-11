@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-parcelize'
 }
 
 android {
@@ -70,6 +71,9 @@ dependencies {
     // ExoPlayer.
     implementation 'com.google.android.exoplayer:exoplayer:2.18.0'
 
+    // Gson.
+    implementation 'com.google.code.gson:gson:2.9.0'
+
     // Koin.
     implementation "io.insert-koin:koin-core:$koin_version"
     implementation "io.insert-koin:koin-android:$koin_version"
@@ -80,4 +84,7 @@ dependencies {
 
     // Timber.
     implementation 'com.jakewharton.timber:timber:5.0.1'
+
+    // EpMedia.
+    implementation 'com.github.yangjie10930:EpMedia:v1.0.1'
 }

@@ -1,11 +1,14 @@
 package eu.app.editedvideosplayer.ui.inputvideoslist
 
 import android.net.Uri
-import android.view.LayoutInflater
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
@@ -17,16 +20,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.ui.StyledPlayerView
+import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import eu.app.editedvideosplayer.entities.video.VideoItem
+import eu.app.editedvideosplayer.ui.common.getFileName
 import org.koin.androidx.compose.getViewModel
 
 @Composable
-fun InputVideosList() {
+fun InputVideosList(navController: NavHostController) {
+
+    val context = LocalContext.current
 
     val inputVideosListViewModel: InputVideosListViewModel = getViewModel()
 
@@ -52,7 +55,7 @@ fun InputVideosList() {
                     videoUrlList = selectedVideos.toMutableList()
 
                     val videoItemsList = videoUrlList.map {
-                        VideoItem(it)
+                        VideoItem(it.toString(), it.getFileName(context))
                     }
 
                     inputVideosListViewModel.addVideos(videoItemsList)
@@ -69,19 +72,31 @@ fun InputVideosList() {
                 )
             }
         },
+        floatingActionButtonPosition = FabPosition.Center,
         content = {
             LazyColumn(
                 Modifier
                     .background(Color.LightGray)
+                    .fillMaxSize()
             ) {
                 items(inputVideosListViewModel.state.value.inputVideos) { video ->
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(top = 4.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    Card(
+                        Modifier
+                            .background(Color.LightGray)
+                            .clickable {
+                                val json = Uri.encode(Gson().toJson(video))
+                                navController.navigate("editVideoDetail/$json")
+                            }
+                            .fillMaxSize()
+                            .padding(end = 4.dp, start = 4.dp, top = 4.dp)
                     ) {
-                        InputVideoListItemHeader(video)
-                        InputVideoListItem(video)
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            InputVideoListItemHeader(video)
+                            InputVideoListItem(video)
+                        }
                     }
                 }
             }
