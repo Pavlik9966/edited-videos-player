@@ -1,4 +1,4 @@
-package eu.app.editedvideosplayer.ui.inputvideoslist
+package eu.app.editedvideosplayer.ui.editedvideoslist
 
 import android.net.Uri
 import androidx.compose.foundation.background
@@ -20,7 +20,7 @@ import com.google.gson.Gson
 import eu.app.editedvideosplayer.entities.video.VideoItem
 
 @Composable
-fun InputVideoListItemHeader(navController: NavHostController, videoItem: VideoItem) {
+fun EditedVideoListItemHeader(navController: NavHostController, videoItem: VideoItem) {
     Row(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.background(Color.DarkGray),
@@ -45,10 +45,10 @@ fun InputVideoListItemHeader(navController: NavHostController, videoItem: VideoI
                 .width(80.dp),
             onClick = {
                 val json = Uri.encode(Gson().toJson(videoItem))
-                navController.navigate("editVideoDetail/$json")
+                navController.navigate("editedVideoDetail/$json")
             },
         ) {
-            Text(text = "Edit")
+            Text(text = "Detail")
         }
     }
 }

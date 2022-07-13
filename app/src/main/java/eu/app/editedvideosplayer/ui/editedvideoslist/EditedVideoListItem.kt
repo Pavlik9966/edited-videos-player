@@ -1,4 +1,4 @@
-package eu.app.editedvideosplayer.ui.inputvideoslist
+package eu.app.editedvideosplayer.ui.editedvideoslist
 
 import android.content.Context
 import androidx.compose.foundation.background
@@ -21,7 +21,7 @@ import com.google.android.exoplayer2.ui.StyledPlayerView
 import eu.app.editedvideosplayer.entities.video.VideoItem
 
 @Composable
-fun InputVideoListItem(videoItem: VideoItem) {
+fun EditedVideoListItem(videoItem: VideoItem) {
 
     val context = LocalContext.current
 

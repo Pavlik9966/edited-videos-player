@@ -12,6 +12,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import eu.app.editedvideosplayer.entities.video.VideoItem
 import eu.app.editedvideosplayer.entities.video.VideoItemNavType
+import eu.app.editedvideosplayer.entities.video.Videos
+import eu.app.editedvideosplayer.entities.video.VideosNavType
 import eu.app.editedvideosplayer.ui.editedvideodetail.EditedVideoDetail
 import eu.app.editedvideosplayer.ui.editedvideoslist.EditedVideosList
 import eu.app.editedvideosplayer.ui.editvideodetail.EditVideoDetail
@@ -49,8 +51,19 @@ fun Navigation(navController: NavHostController) {
         composable("inputVideosSource") {
             InputVideosSource(navController)
         }
-        composable("inputVideosList") {
-            InputVideosList(navController)
+        composable(
+            "inputVideosList/{videos}",
+            arguments = listOf(
+                navArgument("videos") {
+                    type = VideosNavType()
+                }
+            )
+        ) {
+            val videos = it.arguments?.getParcelable<Videos>("videos")
+            InputVideosList(
+                navController = navController,
+                videos = videos?.videos ?: emptyList()
+            )
         }
         composable(
             "editVideoDetail/{video}",
@@ -61,13 +74,35 @@ fun Navigation(navController: NavHostController) {
             )
         ) {
             val video = it.arguments?.getParcelable<VideoItem>("video")
-            EditVideoDetail(video)
+            EditVideoDetail(
+                videoItem = video
+            )
         }
-        composable("editedVideosList") {
-            EditedVideosList()
+        composable(
+            "editedVideosList/{videos}",
+            arguments = listOf(
+                navArgument("videos") {
+                    type = VideosNavType()
+                }
+            )
+        ) {
+            val videos = it.arguments?.getParcelable<Videos>("videos")
+            EditedVideosList(
+                navController = navController,
+                videos = videos?.videos ?: emptyList()
+            )
         }
-        composable("editedVideoDetail") {
-            EditedVideoDetail()
+        composable("editedVideoDetail/{video}",
+            arguments = listOf(
+                navArgument("video") {
+                    type = VideoItemNavType()
+                }
+            )
+        ) {
+            val video = it.arguments?.getParcelable<VideoItem>("video")
+            EditedVideoDetail(
+                videoItem = video
+            )
         }
     }
 }
@@ -75,6 +110,5 @@ fun Navigation(navController: NavHostController) {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    EditedVideosPlayerTheme {
-    }
+    EditedVideosPlayerTheme { }
 }

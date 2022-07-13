@@ -1,5 +1,6 @@
 package eu.app.editedvideosplayer.ui.di
 
+import eu.app.editedvideosplayer.entities.video.VideoItem
 import eu.app.editedvideosplayer.ui.editedvideodetail.EditedVideoDetailViewModel
 import eu.app.editedvideosplayer.ui.editedvideoslist.EditedVideosListViewModel
 import eu.app.editedvideosplayer.ui.editvideodetail.EditVideoDetailViewModel
@@ -9,8 +10,8 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 private val viewModelModule = module {
-    viewModel {
-        InputVideosListViewModel()
+    viewModel { (videos: List<VideoItem>) ->
+        InputVideosListViewModel(videos)
     }
     viewModel {
         InputVideosSourceViewModel()
@@ -18,8 +19,8 @@ private val viewModelModule = module {
     viewModel {
         EditVideoDetailViewModel()
     }
-    viewModel {
-        EditedVideosListViewModel()
+    viewModel { (videos: List<VideoItem>) ->
+        EditedVideosListViewModel(videos)
     }
     viewModel {
         EditedVideoDetailViewModel()

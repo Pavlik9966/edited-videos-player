@@ -1,20 +1,27 @@
 package eu.app.editedvideosplayer.ui.inputvideossource
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Cloud
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
+import eu.app.editedvideosplayer.entities.video.VideoItem
+import eu.app.editedvideosplayer.entities.video.Videos
+import eu.app.editedvideosplayer.ui.common.getFileName
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -23,13 +30,13 @@ fun InputVideosSource(navController: NavHostController) {
     val inputVideosSourceViewModel: InputVideosSourceViewModel = getViewModel()
 
     Scaffold(
-        backgroundColor = Color.White,
+        backgroundColor = Color.LightGray,
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 backgroundColor = Color.Gray,
                 title = {
-                    Text(text = "Input videos source")
+                    Text(color = Color.Black, text = "Input videos source")
                 })
         }, content = {
             Column(
@@ -42,41 +49,76 @@ fun InputVideosSource(navController: NavHostController) {
 
                 val context = LocalContext.current
 
+                LaunchedEffect(Unit) {
+                    inputVideosSourceViewModel
+                        .toastMessage
+                        .collect { msg ->
+                            Toast.makeText(
+                                context,
+                                msg,
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                }
+
+                var videoUrlList by remember {
+                    mutableStateOf<MutableList<Uri>>(mutableListOf())
+                }
+
+                val launcher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.GetMultipleContents(),
+                    onResult = { selectedVideos ->
+                        videoUrlList = selectedVideos.toMutableList()
+
+                        val videoItemsList = videoUrlList.map {
+                            VideoItem(it.toString(), it.getFileName(context))
+                        }
+
+                        val videos = Videos(videoItemsList)
+
+                        val json = Uri.encode(Gson().toJson(videos))
+                        navController.navigate("inputVideosList/$json")
+                    })
+
                 Button(
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.Gray,
                         contentColor = Color.Black
                     ),
-                    modifier = Modifier.width(150.dp),
+                    modifier = Modifier.width(128.dp),
                     onClick = {
-                        navController.navigate("inputVideosList")
+                        launcher.launch("video/*")
                     },
-                    shape = RoundedCornerShape(8.dp),
                 ) {
                     Icon(
                         contentDescription = null,
                         imageVector = Icons.Outlined.Home,
-                        modifier = Modifier.padding(end = 4.dp)
+                        modifier = Modifier
+                            .padding(end = 4.dp)
                     )
-                    Text(text = "Local")
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                        Text(fontWeight = FontWeight.Bold, text = "Local")
+                    }
                 }
                 Button(
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = Color.Gray,
                         contentColor = Color.Black
                     ),
-                    modifier = Modifier.width(150.dp),
+                    modifier = Modifier.width(128.dp),
                     onClick = {
-                        Toast.makeText(context, "Remote soon.", Toast.LENGTH_SHORT).show()
+                        inputVideosSourceViewModel.loadFromRemoteSource("Input remote source...")
                     },
-                    shape = RoundedCornerShape(8.dp)
                 ) {
                     Icon(
                         contentDescription = null,
-                        imageVector = Icons.Outlined.Settings,
-                        modifier = Modifier.padding(end = 4.dp)
+                        imageVector = Icons.Outlined.Cloud,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
                     )
-                    Text(text = "Remote")
+                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxWidth()) {
+                        Text(fontWeight = FontWeight.Bold, text = "Remote")
+                    }
                 }
             }
         }

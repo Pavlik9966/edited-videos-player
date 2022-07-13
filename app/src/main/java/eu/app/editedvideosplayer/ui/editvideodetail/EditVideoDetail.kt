@@ -1,11 +1,13 @@
 package eu.app.editedvideosplayer.ui.editvideodetail
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Preview
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
@@ -42,14 +44,16 @@ fun EditVideoDetail(videoItem: VideoItem? = null) {
             TopAppBar(
                 backgroundColor = Color.Gray,
                 title = {
-                    Text(text = "Edit video detail")
+                    Text(color = Color.Black, text = "Edit video detail")
                 }
             )
         },
         content = {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .background(Color.Gray)
+                    .fillMaxSize(),
                 verticalArrangement = Arrangement.Center
             ) {
 
@@ -64,7 +68,7 @@ fun EditVideoDetail(videoItem: VideoItem? = null) {
 
                         setMediaItem(mediaItem)
 
-                        playWhenReady = false
+                        playWhenReady = true
                         prepare()
                     }
                 }
@@ -75,7 +79,9 @@ fun EditVideoDetail(videoItem: VideoItem? = null) {
                             StyledPlayerView(it).apply {
                                 player = exoPlayer
                             }
-                        })
+                        },
+                        modifier = Modifier.background(Color.Gray)
+                    )
                 ) {
                     onDispose { exoPlayer.release() }
                 }
@@ -93,10 +99,13 @@ fun EditVideoDetail(videoItem: VideoItem? = null) {
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    EditVideoDetailBottomSheetListItem("Title", {})
-                    EditVideoDetailBottomSheetListItem("Title", {})
-                    EditVideoDetailBottomSheetListItem("Title", {})
-                    EditVideoDetailBottomSheetListItem("Title", {})
+                    EditVideoDetailBottomSheetListItem(Icons.Outlined.Save, "Save", {})
+                    Divider()
+                    EditVideoDetailBottomSheetListItem(Icons.Outlined.Preview, "Preview", {})
+                    Divider()
+                    EditVideoDetailBottomSheetListItem(Icons.Outlined.Preview, "Preview", {})
+                    Divider()
+                    EditVideoDetailBottomSheetListItem(Icons.Outlined.Preview, "Preview", {})
                 }
             }
         },
@@ -128,19 +137,4 @@ fun EditVideoDetail(videoItem: VideoItem? = null) {
                 }
             }
     )
-}
-
-@Composable
-fun EditVideoDetailBottomSheetListItem(title: String, onItemClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .background(Color.Gray)
-            .clickable { onItemClick() }
-            .fillMaxWidth()
-            .height(50.dp)
-            .padding(start = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = "Action")
-    }
 }

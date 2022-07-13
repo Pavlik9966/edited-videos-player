@@ -5,13 +5,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import eu.app.editedvideosplayer.entities.video.VideoItem
 
-class InputVideosListViewModel : ViewModel() {
+class InputVideosListViewModel(private val videos: List<VideoItem>) : ViewModel() {
 
     private val _state = mutableStateOf(InputVideosListState())
 
     val state: State<InputVideosListState> = _state
 
-    fun addVideos(videos: List<VideoItem>) {
+    init {
+        updateComposeState {
+            copy(
+                inputVideos = videos
+            )
+        }
+    }
+
+    fun updateVideos(videos: List<VideoItem>) {
         updateComposeState {
             copy(
                 inputVideos = videos
