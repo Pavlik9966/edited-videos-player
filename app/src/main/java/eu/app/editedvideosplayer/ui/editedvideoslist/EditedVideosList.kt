@@ -1,6 +1,7 @@
 package eu.app.editedvideosplayer.ui.editedvideoslist
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,7 +37,35 @@ fun EditedVideosList(navController: NavHostController, videos: List<VideoItem>) 
             TopAppBar(
                 backgroundColor = Color.Gray,
                 title = {
-                    Text(color = Color.Black, text = "Edited videos list")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(color = Color.Black, text = "Edited videos list")
+                        Spacer(modifier = Modifier.weight(1f))
+                        Button(
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.DarkGray,
+                                contentColor = Color.Black
+                            ),
+                            modifier = Modifier
+                                .width(128.dp)
+                                .padding(end = 8.dp),
+                            onClick = { editedVideosListViewModel.openOutputDialog() },
+                        ) {
+                            Icon(
+                                contentDescription = null,
+                                imageVector = Icons.Outlined.Save,
+                                modifier = Modifier.padding(end = 4.dp)
+                            )
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(fontWeight = FontWeight.Bold, text = "Save")
+                            }
+                        }
+                    }
                 })
         },
         content = {
@@ -80,7 +109,7 @@ fun EditedVideosList(navController: NavHostController, videos: List<VideoItem>) 
                                     modifier = Modifier
                                         .padding(start = 8.dp, top = 60.dp)
                                         .width(50.dp),
-                                    onClick = { }
+                                    onClick = { editedVideosListViewModel.removeVideo(video.fileName) }
                                 ) {
                                     Icon(
                                         contentDescription = null,
@@ -108,39 +137,8 @@ fun EditedVideosList(navController: NavHostController, videos: List<VideoItem>) 
                     }
                 }
             }
-            Column(
-                Modifier
-                    .background(Color.Transparent)
-                    .fillMaxSize()
-            ) {
-                Spacer(modifier = Modifier.weight(1f))
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Gray,
-                            contentColor = Color.Black
-                        ),
-                        modifier = Modifier.width(128.dp),
-                        onClick = { editedVideosListViewModel.openOutputDialog() },
-                    ) {
-                        Icon(
-                            contentDescription = null,
-                            imageVector = Icons.Outlined.Save,
-                            modifier = Modifier.padding(end = 4.dp)
-                        )
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(fontWeight = FontWeight.Bold, text = "Save")
-                        }
-                    }
-                }
-            }
+
+            BackHandler(enabled = true) { }
 
             val context = LocalContext.current
 
@@ -160,7 +158,8 @@ fun EditedVideosList(navController: NavHostController, videos: List<VideoItem>) 
                 OutputVideoSourceDialog(
                     onDismiss = editedVideosListViewModel::dismissOutputDialog,
                     onLocalClick = editedVideosListViewModel::saveIntoLocalSource,
-                    onRemoteClick = editedVideosListViewModel::saveIntoRemoteSource
+                    onRemoteClick = editedVideosListViewModel::saveIntoRemoteSource,
+                    navController = navController
                 )
             }
         })

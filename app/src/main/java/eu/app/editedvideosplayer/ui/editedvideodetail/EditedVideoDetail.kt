@@ -21,11 +21,13 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import eu.app.editedvideosplayer.entities.video.VideoItem
 import org.koin.androidx.compose.getViewModel
+import org.koin.core.parameter.parametersOf
 
 @Composable
 fun EditedVideoDetail(videoItem: VideoItem? = null) {
 
-    val editedVideoDetailViewModel: EditedVideoDetailViewModel = getViewModel()
+    val editedVideoDetailViewModel: EditedVideoDetailViewModel =
+        getViewModel { parametersOf(videoItem) }
 
     Scaffold(
         topBar = {
@@ -50,7 +52,7 @@ fun EditedVideoDetail(videoItem: VideoItem? = null) {
                     ExoPlayer.Builder(context).build().apply {
 
                         val mediaItem = MediaItem.Builder()
-                            .setUri(videoItem?.uri?.toUri())
+                            .setUri(editedVideoDetailViewModel.state.value.video.uri.toUri())
                             .build()
 
                         setMediaItem(mediaItem)

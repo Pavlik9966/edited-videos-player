@@ -16,14 +16,14 @@ private val viewModelModule = module {
     viewModel {
         InputVideosSourceViewModel()
     }
-    viewModel {
-        EditVideoDetailViewModel()
+    viewModel { (selectedVideo: VideoItem, filesDir: String) ->
+        EditVideoDetailViewModel(selectedVideo, filesDir)
     }
     viewModel { (videos: List<VideoItem>) ->
         EditedVideosListViewModel(videos)
     }
-    viewModel {
-        EditedVideoDetailViewModel()
+    viewModel { (selectedVideo: VideoItem) ->
+        EditedVideoDetailViewModel(selectedVideo)
     }
 }
 

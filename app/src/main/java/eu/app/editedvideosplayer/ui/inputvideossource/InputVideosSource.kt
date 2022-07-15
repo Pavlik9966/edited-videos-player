@@ -22,6 +22,7 @@ import com.google.gson.Gson
 import eu.app.editedvideosplayer.entities.video.VideoItem
 import eu.app.editedvideosplayer.entities.video.Videos
 import eu.app.editedvideosplayer.ui.common.getFileName
+import eu.app.editedvideosplayer.ui.common.getPath
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -71,14 +72,19 @@ fun InputVideosSource(navController: NavHostController) {
                         videoUrlList = selectedVideos.toMutableList()
 
                         val videoItemsList = videoUrlList.map {
-                            VideoItem(it.toString(), it.getFileName(context))
+                            VideoItem(
+                                it.toString(),
+                                it.getFileName(context),
+                                it.getPath(context).orEmpty()
+                            )
                         }
 
                         val videos = Videos(videoItemsList)
 
                         val json = Uri.encode(Gson().toJson(videos))
                         navController.navigate("inputVideosList/$json")
-                    })
+                    }
+                )
 
                 Button(
                     colors = ButtonDefaults.buttonColors(

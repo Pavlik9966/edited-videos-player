@@ -1,5 +1,6 @@
 package eu.app.editedvideosplayer.ui.utils
 
+import android.Manifest
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -14,7 +15,9 @@ fun PermissionRequest() {
 
     val multiplePermissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
-
+            Manifest.permission.ACCESS_MEDIA_LOCATION,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
     )
 

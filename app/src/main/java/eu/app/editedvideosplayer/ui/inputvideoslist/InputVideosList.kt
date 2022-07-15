@@ -1,6 +1,7 @@
 package eu.app.editedvideosplayer.ui.inputvideoslist
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -27,13 +28,46 @@ fun InputVideosList(navController: NavHostController, videos: List<VideoItem>) {
     val inputVideosListViewModel: InputVideosListViewModel = getViewModel { parametersOf(videos) }
 
     Scaffold(
-        backgroundColor = Color.LightGray,
         modifier = Modifier.fillMaxSize(),
         topBar = {
             TopAppBar(
                 backgroundColor = Color.Gray,
                 title = {
-                    Text(color = Color.Black, text = "Input videos list")
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(color = Color.Black, text = "Input videos list")
+                        Spacer(modifier = Modifier.weight(1f))
+                        Button(
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = Color.DarkGray,
+                                contentColor = Color.Black
+                            ),
+                            modifier = Modifier
+                                .width(128.dp)
+                                .padding(end = 8.dp),
+                            onClick = {
+                                val json = Uri.encode(
+                                    Gson().toJson(Videos(inputVideosListViewModel.state.value.inputVideos))
+                                )
+                                navController.navigate("editedVideosList/$json")
+                            },
+                        ) {
+                            Icon(
+                                contentDescription = null,
+                                imageVector = Icons.Outlined.NavigateNext,
+                                modifier = Modifier
+                                    .padding(end = 4.dp)
+                            )
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(fontWeight = FontWeight.Bold, text = "Next")
+                            }
+                        }
+                    }
                 })
         },
         content = {
@@ -60,43 +94,7 @@ fun InputVideosList(navController: NavHostController, videos: List<VideoItem>) {
                     }
                 }
             }
-            Column(
-                Modifier
-                    .background(Color.Transparent)
-                    .fillMaxSize()
-            ) {
-                Spacer(modifier = Modifier.weight(1f))
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Button(
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = Color.Gray,
-                            contentColor = Color.Black
-                        ),
-                        modifier = Modifier.width(128.dp),
-                        onClick = {
-                            val json = Uri.encode(Gson().toJson(Videos(videos)))
-                            navController.navigate("editedVideosList/$json")
-                        },
-                    ) {
-                        Icon(
-                            contentDescription = null,
-                            imageVector = Icons.Outlined.NavigateNext,
-                            modifier = Modifier
-                                .padding(end = 4.dp)
-                        )
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(fontWeight = FontWeight.Bold, text = "Next")
-                        }
-                    }
-                }
-            }
+            BackHandler(enabled = true) { }
         }
     )
 }

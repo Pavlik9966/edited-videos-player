@@ -17,6 +17,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.net.toUri
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import eu.app.editedvideosplayer.entities.video.VideoItem
 
@@ -40,6 +41,7 @@ fun EditedVideoListItem(videoItem: VideoItem) {
                     StyledPlayerView(it).apply {
                         hideController()
                         player = exoPlayer
+                        useController = false
                     }
                 },
                 modifier = Modifier
@@ -61,6 +63,7 @@ private fun setupExoPlayer(context: Context, videoItem: VideoItem): ExoPlayer =
 
         setMediaItem(mediaItem)
 
-        playWhenReady = false
+        playWhenReady = true
         prepare()
+        repeatMode = Player.REPEAT_MODE_ONE
     }

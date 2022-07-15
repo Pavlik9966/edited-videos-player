@@ -1,27 +1,23 @@
-package eu.app.editedvideosplayer.ui.outputvideosource
+package eu.app.editedvideosplayer.ui.editvideodetail
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Cloud
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.navigation.NavHostController
+import java.util.*
 
 @Composable
-fun OutputVideoSourceDialog(
-    onLocalClick: () -> Unit,
-    onRemoteClick: (String) -> Unit,
-    onDismiss: () -> Unit,
-    navController: NavHostController
+fun EditVideoPlaybackSpeedDialog(
+    onCancelClick: () -> Unit,
+    onOKClick: (Float) -> Unit,
+    onDismiss: () -> Unit
 ) {
     Dialog(onDismissRequest = { onDismiss() }) {
         Card(
@@ -29,6 +25,11 @@ fun OutputVideoSourceDialog(
             modifier = Modifier.padding(8.dp),
             shape = RoundedCornerShape(16.dp)
         ) {
+
+            val sliderValue = remember {
+                mutableStateOf(1f)
+            }
+
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
@@ -44,58 +45,58 @@ fun OutputVideoSourceDialog(
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(8.dp),
-                        text = "Choose output source"
+                        text = "Set video playback speed"
                     )
                 }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
+                    Text(
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(top = 8.dp),
+                        text = String.format(locale = Locale.ENGLISH, "%.2f", sliderValue.value)
+                    )
+                    Slider(
+                        colors = SliderDefaults.colors(
+                            thumbColor = Color.Black,
+                            activeTrackColor = Color.Black
+                        ),
+                        modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                        onValueChange = { sliderValue.value = it },
+                        value = sliderValue.value,
+                        valueRange = 0.25f..4f
+                    )
+                }
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Button(
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.Gray,
                             contentColor = Color.Black
                         ),
-                        modifier = Modifier.width(128.dp),
+                        modifier = Modifier.width(96.dp),
                         onClick = {
-                            onLocalClick()
-                            navController.navigate("inputVideosSource")
+                            onCancelClick()
                         },
                     ) {
-                        Icon(
-                            contentDescription = null,
-                            imageVector = Icons.Outlined.Home,
-                            modifier = Modifier.padding(end = 4.dp)
-                        )
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(fontWeight = FontWeight.Bold, text = "Local")
-                        }
+                        Text(fontWeight = FontWeight.Bold, text = "Cancel")
                     }
+                    Spacer(modifier = Modifier.width(16.dp))
                     Button(
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = Color.Gray,
                             contentColor = Color.Black
                         ),
-                        modifier = Modifier.width(128.dp),
+                        modifier = Modifier.width(96.dp),
                         onClick = {
-                            onRemoteClick("Output remote source...")
-                            navController.navigate("inputVideosSource")
+                            onOKClick(sliderValue.value)
+                            onDismiss()
                         },
                     ) {
-                        Icon(
-                            contentDescription = null,
-                            imageVector = Icons.Outlined.Cloud,
-                            modifier = Modifier.padding(end = 4.dp)
-                        )
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(fontWeight = FontWeight.Bold, text = "Remote")
-                        }
+                        Text(fontWeight = FontWeight.Bold, text = "OK")
                     }
                 }
             }
