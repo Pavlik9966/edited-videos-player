@@ -1,20 +1,21 @@
 package eu.app.editedvideosplayer.ui.editedvideoslist
 
-import android.content.ContentValues
-import android.content.Context
-import android.provider.MediaStore
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import eu.app.editedvideosplayer.domain.usecase.DeleteRedundantFilesUseCase
+import eu.app.editedvideosplayer.domain.usecase.SaveVideosIntoGalleryUseCase
 import eu.app.editedvideosplayer.entities.video.VideoItem
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import java.io.File
-import java.io.FileInputStream
 
-class EditedVideosListViewModel(private val videos: List<VideoItem>) : ViewModel() {
+class EditedVideosListViewModel(
+    private val videos: List<VideoItem>,
+    private val saveVideosIntoGalleryUseCase: SaveVideosIntoGalleryUseCase,
+    private val deleteRedundantFilesUseCase: DeleteRedundantFilesUseCase
+) : ViewModel() {
 
     private val _state = mutableStateOf(EditedVideosListState())
 
@@ -49,60 +50,31 @@ class EditedVideosListViewModel(private val videos: List<VideoItem>) : ViewModel
     }
 
     fun saveIntoLocalSource() {
-        dismissOutputDialog()
+        viewModelScope.launch {
+            _state.value.run {
+                saveVideosIntoGalleryUseCase(SaveVideosIntoGalleryUseCase.Params(getVideosForSave()))
+                deleteRedundantFilesUseCase(DeleteRedundantFilesUseCase.Params(getVideosForDelete()))
+            }
+        }
     }
 
     fun saveIntoRemoteSource(msg: String) {
         viewModelScope.launch {
             _toastMessage.emit(msg)
+            deleteRedundantFilesUseCase(DeleteRedundantFilesUseCase.Params(getVideosForDelete()))
         }
     }
 
-    fun removeVideo(fileName: String) {
-        updateComposeState {
-            copy(
-                inputVideos = inputVideos.filter { it.fileName != fileName }
-            )
-        }
-    }
+    private fun getVideosForSave(): List<VideoItem> =
+        _state.value.inputVideos.filter { it.saveItem }
 
-    fun saveVideosToGallery(context: Context) {
-        _state.value.inputVideos.forEach { video ->
-            val fileName = "Edited_${System.currentTimeMillis()}.mp4"
-
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
-                put(MediaStore.MediaColumns.MIME_TYPE, "video/mp4")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, "DCIM/Camera/")
-                put(MediaStore.MediaColumns.TITLE, fileName)
-            }
-
-            val contentResolver = context.contentResolver
-
-            val videoUri = contentResolver.insert(
-                MediaStore.Video.Media.EXTERNAL_CONTENT_URI, contentValues
-            )
-
-            videoUri?.let {
-                val fis = FileInputStream(File(video.path))
-                val fos = contentResolver.openOutputStream(videoUri)
-                val buffer = ByteArray(8192)
-                var len: Int
-                while (fis.read(buffer).also { len = it } > 0) {
-                    fos?.write(buffer, 0, len)
-                }
-                fos?.flush()
-                fos?.close()
-                fis.close()
-                contentValues.clear()
-                context.contentResolver.update(videoUri, contentValues, null, null)
-            }
-        }
-    }
+    private fun getVideosForDelete(): List<VideoItem> =
+        _state.value.inputVideos.filter { it.wasEdited }
 
     data class EditedVideosListState(
         val inputVideos: List<VideoItem> = emptyList(),
-        val isOutputDialogOpen: Boolean = false
+        val isOutputDialogOpen: Boolean = false,
+        val videosForSave: List<VideoItem> = emptyList()
     )
 
     private fun updateComposeState(body: EditedVideosListState.() -> EditedVideosListState) {

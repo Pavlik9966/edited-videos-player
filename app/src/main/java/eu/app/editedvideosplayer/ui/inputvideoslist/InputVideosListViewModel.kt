@@ -19,16 +19,35 @@ class InputVideosListViewModel(private val videos: List<VideoItem>) : ViewModel(
         }
     }
 
-    fun updateVideos(videos: List<VideoItem>) {
+    fun updateVideos(video: VideoItem) {
+        var updated: MutableList<VideoItem>
+
+        _state.value.run {
+            updated = inputVideos.toMutableList().apply {
+                removeIf { it.path == editedVideo?.path }
+                add(video)
+            }
+        }
+
         updateComposeState {
             copy(
-                inputVideos = videos
+                inputVideos = updated.toList(),
+                editedVideo = null
+            )
+        }
+    }
+
+    fun isEdited(video: VideoItem) {
+        updateComposeState {
+            copy(
+                editedVideo = video
             )
         }
     }
 
     data class InputVideosListState(
-        val inputVideos: List<VideoItem> = emptyList()
+        val inputVideos: List<VideoItem> = emptyList(),
+        val editedVideo: VideoItem? = null
     )
 
     private fun updateComposeState(body: InputVideosListState.() -> InputVideosListState) {

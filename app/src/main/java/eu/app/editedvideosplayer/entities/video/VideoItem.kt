@@ -10,7 +10,9 @@ import kotlinx.parcelize.Parcelize
 data class VideoItem(
     val uri: String,
     val fileName: String,
-    val path: String
+    val path: String,
+    var saveItem: Boolean = true,
+    var wasEdited: Boolean = false
 ) : Parcelable
 
 class VideoItemNavType : NavType<VideoItem>(isNullableAllowed = false) {

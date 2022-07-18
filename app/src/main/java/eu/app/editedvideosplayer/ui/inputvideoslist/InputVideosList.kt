@@ -10,6 +10,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.NavigateNext
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +28,20 @@ import org.koin.core.parameter.parametersOf
 fun InputVideosList(navController: NavHostController, videos: List<VideoItem>) {
 
     val inputVideosListViewModel: InputVideosListViewModel = getViewModel { parametersOf(videos) }
+
+    val screenResultState = navController.currentBackStackEntry
+        ?.savedStateHandle
+        ?.getLiveData<VideoItem>("video_item")
+        ?.observeAsState()
+
+    screenResultState?.value?.let {
+        navController.currentBackStackEntry
+            ?.savedStateHandle
+            ?.remove<VideoItem>("video_item")
+        LaunchedEffect(key1 = it, block = {
+            inputVideosListViewModel.updateVideos(it)
+        })
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -88,7 +104,13 @@ fun InputVideosList(navController: NavHostController, videos: List<VideoItem>) {
                             modifier = Modifier.background(Color.Gray),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            InputVideoListItemHeader(navController, video)
+                            InputVideoListItemHeader(
+                                navController,
+                                video,
+                                editClicked = {
+                                    inputVideosListViewModel.isEdited(video)
+                                }
+                            )
                             InputVideoListItem(video)
                         }
                     }

@@ -7,7 +7,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material.icons.outlined.Save
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,10 +57,9 @@ fun EditVideoDetail(navController: NavHostController, videoItem: VideoItem? = nu
                         if (editVideoDetailViewModel.state.value.isEdited) {
                             CircularProgressIndicator(
                                 modifier = Modifier
-                                    .size(48.dp)
                                     .padding(end = 16.dp),
                                 color = Color.Red,
-                                strokeWidth = 8.dp
+                                strokeWidth = 6.dp
                             )
                         }
                     }
@@ -116,46 +116,50 @@ fun EditVideoDetail(navController: NavHostController, videoItem: VideoItem? = nu
             }
         },
         sheetContent = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(unbounded = true)
-                    .wrapContentWidth(unbounded = false)
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center
+            if (!editVideoDetailViewModel.state.value.isEdited) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight(unbounded = true)
+                        .wrapContentWidth(unbounded = false)
                 ) {
-                    EditVideoDetailBottomSheetListItem(
-                        Icons.Outlined.Save,
-                        "Save",
-                        editVideoDetailViewModel::saveClicked
-                    )
-                    Divider()
-                    EditVideoDetailBottomSheetListItem(
-                        Icons.Outlined.Edit,
-                        "Clip",
-                        editVideoDetailViewModel::openVideoClipDialog
-                    )
-                    Divider()
-                    EditVideoDetailBottomSheetListItem(
-                        Icons.Outlined.Edit,
-                        "Reverse",
-                        editVideoDetailViewModel::reverseVideo
-                    )
-                    Divider()
-                    EditVideoDetailBottomSheetListItem(
-                        Icons.Outlined.Edit,
-                        "Rotation 90°",
-                        editVideoDetailViewModel::rotateVideo
-                    )
-                    Divider()
-                    EditVideoDetailBottomSheetListItem(
-                        Icons.Outlined.Edit,
-                        "Playback speed",
-                        editVideoDetailViewModel::openVideoPlaybackSpeedDialog
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        EditVideoDetailBottomSheetListItem(
+                            Icons.Outlined.Save,
+                            "Save",
+                            editVideoDetailViewModel::saveClicked
+                        )
+                        if (!editVideoDetailViewModel.state.value.wasEdited) {
+                            Divider()
+                            EditVideoDetailBottomSheetListItem(
+                                Icons.Outlined.Edit,
+                                "Clip",
+                                editVideoDetailViewModel::openVideoClipDialog
+                            )
+                            Divider()
+                            EditVideoDetailBottomSheetListItem(
+                                Icons.Outlined.Edit,
+                                "Reverse",
+                                editVideoDetailViewModel::reverseVideo
+                            )
+                            Divider()
+                            EditVideoDetailBottomSheetListItem(
+                                Icons.Outlined.Edit,
+                                "Rotation 90°",
+                                editVideoDetailViewModel::rotateVideo
+                            )
+                            Divider()
+                            EditVideoDetailBottomSheetListItem(
+                                Icons.Outlined.Edit,
+                                "Playback speed",
+                                editVideoDetailViewModel::openVideoPlaybackSpeedDialog
+                            )
+                        }
+                    }
                 }
             }
 
@@ -178,6 +182,9 @@ fun EditVideoDetail(navController: NavHostController, videoItem: VideoItem? = nu
             BackHandler(enabled = true) {
                 if (!editVideoDetailViewModel.state.value.isEdited) {
                     if (editVideoDetailViewModel.state.value.wasSaveClicked) {
+                        navController.previousBackStackEntry
+                            ?.savedStateHandle
+                            ?.set("video_item", editVideoDetailViewModel.state.value.currentVideo)
                         navController.popBackStack()
                     } else {
                         if (editVideoDetailViewModel.state.value.wasEdited) {

@@ -20,7 +20,11 @@ import com.google.gson.Gson
 import eu.app.editedvideosplayer.entities.video.VideoItem
 
 @Composable
-fun InputVideoListItemHeader(navController: NavHostController, videoItem: VideoItem) {
+fun InputVideoListItemHeader(
+    navController: NavHostController,
+    videoItem: VideoItem,
+    editClicked: () -> Unit
+) {
     Row(
         horizontalArrangement = Arrangement.Center,
         modifier = Modifier.background(Color.DarkGray),
@@ -44,6 +48,7 @@ fun InputVideoListItemHeader(navController: NavHostController, videoItem: VideoI
                 .padding(top = 4.dp, end = 8.dp, bottom = 4.dp)
                 .width(80.dp),
             onClick = {
+                editClicked()
                 val json = Uri.encode(Gson().toJson(videoItem))
                 navController.navigate("editVideoDetail/$json")
             },

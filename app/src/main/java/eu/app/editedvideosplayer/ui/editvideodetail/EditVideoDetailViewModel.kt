@@ -37,7 +37,8 @@ class EditVideoDetailViewModel(
                                 currentVideo = VideoItem(
                                     getUriFromPath(editedVideoFile.absolutePath).toString(),
                                     editedVideoFile.name,
-                                    editedVideoFile.path
+                                    editedVideoFile.path,
+                                    wasEdited = true
                                 )
                             )
                         }
@@ -85,7 +86,8 @@ class EditVideoDetailViewModel(
                                 currentVideo = VideoItem(
                                     getUriFromPath(editedVideoFile.absolutePath).toString(),
                                     editedVideoFile.name,
-                                    editedVideoFile.path
+                                    editedVideoFile.path,
+                                    wasEdited = true
                                 )
                             )
                         }
@@ -133,7 +135,8 @@ class EditVideoDetailViewModel(
                                 currentVideo = VideoItem(
                                     getUriFromPath(editedVideoFile.absolutePath).toString(),
                                     editedVideoFile.name,
-                                    editedVideoFile.path
+                                    editedVideoFile.path,
+                                    wasEdited = true
                                 )
                             )
                         }

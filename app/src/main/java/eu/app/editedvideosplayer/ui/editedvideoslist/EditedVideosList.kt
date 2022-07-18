@@ -8,11 +8,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Check
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Save
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -101,37 +101,25 @@ fun EditedVideosList(navController: NavHostController, videos: List<VideoItem>) 
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Button(
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Color.Red,
-                                        contentColor = Color.Black
-                                    ),
-                                    modifier = Modifier
-                                        .padding(start = 8.dp, top = 60.dp)
-                                        .width(50.dp),
-                                    onClick = { editedVideosListViewModel.removeVideo(video.fileName) }
-                                ) {
-                                    Icon(
-                                        contentDescription = null,
-                                        imageVector = Icons.Outlined.Delete,
-                                    )
-                                }
                                 Spacer(modifier = Modifier.weight(1f))
-                                Button(
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = Color.Green,
-                                        contentColor = Color.Black
-                                    ),
-                                    modifier = Modifier
-                                        .padding(top = 60.dp, end = 8.dp)
-                                        .width(50.dp),
-                                    onClick = { }
-                                ) {
-                                    Icon(
-                                        contentDescription = null,
-                                        imageVector = Icons.Outlined.Check,
-                                    )
+
+                                val isChecked = remember {
+                                    mutableStateOf(video.saveItem)
                                 }
+
+                                Checkbox(
+                                    colors = CheckboxDefaults.colors(
+                                        checkedColor = Color.Green,
+                                        uncheckedColor = Color.Red
+                                    ),
+                                    checked = isChecked.value,
+                                    modifier = Modifier
+                                        .padding(top = 60.dp, end = 8.dp),
+                                    onCheckedChange = {
+                                        isChecked.value = it
+                                        video.saveItem = it
+                                    }
+                                )
                             }
                         }
                     }

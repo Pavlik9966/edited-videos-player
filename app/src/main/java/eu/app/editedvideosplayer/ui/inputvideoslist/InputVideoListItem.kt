@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,7 +21,6 @@ import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.ui.StyledPlayerView
 import eu.app.editedvideosplayer.entities.video.VideoItem
-import timber.log.Timber
 
 @Composable
 fun InputVideoListItem(videoItem: VideoItem) {
@@ -36,6 +36,19 @@ fun InputVideoListItem(videoItem: VideoItem) {
         modifier = Modifier.background(Color.Gray),
         verticalAlignment = Alignment.CenterVertically
     ) {
+
+        LaunchedEffect(
+            key1 = videoItem,
+            block = {
+                exoPlayer.setMediaItem(
+                    MediaItem
+                        .Builder()
+                        .setUri(videoItem.uri.toUri())
+                        .build()
+                )
+            }
+        )
+
         DisposableEffect(
             AndroidView(
                 factory = {
@@ -52,7 +65,6 @@ fun InputVideoListItem(videoItem: VideoItem) {
         ) {
             onDispose { exoPlayer.release() }
         }
-        Timber.d(videoItem.path)
     }
 }
 

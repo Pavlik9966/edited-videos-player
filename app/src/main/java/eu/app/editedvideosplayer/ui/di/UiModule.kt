@@ -20,7 +20,7 @@ private val viewModelModule = module {
         EditVideoDetailViewModel(selectedVideo, filesDir)
     }
     viewModel { (videos: List<VideoItem>) ->
-        EditedVideosListViewModel(videos)
+        EditedVideosListViewModel(videos, get(), get())
     }
     viewModel { (selectedVideo: VideoItem) ->
         EditedVideoDetailViewModel(selectedVideo)
